@@ -1,10 +1,8 @@
-import express from "express";
-import authRoutes from "./authRoutes.js";
-import attendanceRoutes from "./attendanceRoutes.js";
+import { Router } from "express";
 import profileRoutes from "./profileRoutes.js";
 
-export const router = express.Router();
+const router = Router();
 
-router.use("/auth", authRoutes);
-router.use("/attendance", attendanceRoutes);
 router.use("/profile", profileRoutes);
+
+export default router;
