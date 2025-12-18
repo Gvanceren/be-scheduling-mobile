@@ -1,16 +1,16 @@
 import express from "express";
+import authMiddleware from "../middlewares/authMiddleware.js";
+import { uploadAbsensi } from "../middlewares/uploadAbsensi.js";
 import {
-  absensiMasuk,
-  absensiPulang,
+  absenMasuk,
+  absenPulang,
+  uploadFotoAbsensi,
 } from "../controllers/attendanceController.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
-
 
 const router = express.Router();
-router.post("/checkin", authMiddleware, absensiMasuk);
-router.post("/checkout", authMiddleware, absensiPulang);
 
-import { uploadFotoAbsensi } from "../controllers/attendanceController.js";
+router.post("/masuk", authMiddleware, absenMasuk);
+router.post("/pulang", authMiddleware, absenPulang);
 
 router.post(
   "/upload-foto",
