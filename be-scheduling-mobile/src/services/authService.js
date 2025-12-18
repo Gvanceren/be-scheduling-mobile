@@ -1,27 +1,21 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { UserModel } from "../models/userModel.js";
-import { env } from "../config/env.js";
+import bcrypt from "bcrypt";
+import { findUserByEmail } from "../models/userModel.js";
+import { generateToken } from "../utils/jwt.js";
 
-export const AuthService = {
-  async login(email, password) {
-    const user = await UserModel.findByEmail(email);
-    if (!user) throw new Error("Email tidak terdaftar");
+export const loginService = async (email, password) => {
+  const user = await findUserByEmail(email);
+  if (!user) throw new Error("User tidak ditemukan");
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) throw new Error("Password salah");
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) throw new Error("Password salah");
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      env.jwt_secret,
-      { expiresIn: "1d" }
-    );
+  const token = generateToken({
+    id: user.id,
+    role: user.nama_role,
+    login_type: user.login_type,
+  });
 
-    return { token, user };
-  },
+  delete user.password;
 
-  async register(data) {
-    const hashed = await bcrypt.hash(data.password, 10);
-    return await UserModel.createUser({ ...data, password: hashed });
-  }
+  return { token, user };
 };

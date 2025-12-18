@@ -1,18 +1,14 @@
+import {
+  getProfileById,
+  updateProfile,
+} from "../models/profileModel.js";
+
 export const getProfile = async (req, res) => {
-  try {
-    res.json({
-      message: "Profile fetched successfully",
-      user: req.user,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const profile = await getProfileById(req.user.id);
+  res.json(profile);
 };
 
-export const updateProfile = async (req, res) => {
-  try {
-    res.json({ message: "Profile updated" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+export const editProfile = async (req, res) => {
+  await updateProfile(req.user.id, req.body);
+  res.json({ message: "Profile berhasil diperbarui" });
 };

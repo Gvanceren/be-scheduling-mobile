@@ -1,21 +1,12 @@
-import { db } from "../config/db.js";
+import db from "../config/db.js";
 
-export const UserModel = {
-  async findByEmail(email) {
-    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-    return rows[0];
-  },
-
-  async findById(id) {
-    const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [id]);
-    return rows[0];
-  },
-
-  async createUser({ name, email, password }) {
-    const [result] = await db.query(
-      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-      [name, email, password]
-    );
-    return result.insertId;
-  }
+export const findUserByEmail = async (email) => {
+  const [rows] = await db.query(
+    `SELECT users.*, roles.nama_role
+     FROM users
+     JOIN roles ON users.id_role = roles.id
+     WHERE email = ? AND status = 'aktif'`,
+    [email]
+  );
+  return rows[0];
 };

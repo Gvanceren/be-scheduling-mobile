@@ -1,33 +1,19 @@
-import { db } from "../config/db.js";
+import db from "../config/db.js";
 
-export const AttendanceModel = {
-  async getTodayAttendance(user_id, dateNow) {
-    const [rows] = await db.query(
-      "SELECT * FROM attendance WHERE user_id = ? AND date = ?",
-      [user_id, dateNow]
-    );
-    return rows[0];
-  },
+export const checkIn = async (userId) => {
+  const [result] = await db.query(
+    `INSERT INTO absensi (user_id, tanggal, jam_masuk, status)
+     VALUES (?, CURDATE(), CURTIME(), 'hadir')`,
+    [userId]
+  );
+  return result.insertId;
+};
 
-  async checkIn(user_id, dateNow, timeNow) {
-    await db.query(
-      "INSERT INTO attendance (user_id, date, check_in) VALUES (?, ?, ?)",
-      [user_id, dateNow, timeNow]
-    );
-  },
-
-  async checkOut(user_id, dateNow, timeNow) {
-    await db.query(
-      "UPDATE attendance SET check_out = ? WHERE user_id = ? AND date = ?",
-      [timeNow, user_id, dateNow]
-    );
-  },
-
-  async history(user_id) {
-    const [rows] = await db.query(
-      "SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC",
-      [user_id]
-    );
-    return rows;
-  }
+export const checkOut = async (userId) => {
+  await db.query(
+    `UPDATE absensi
+     SET jam_keluar = CURTIME()
+     WHERE user_id = ? AND tanggal = CURDATE()`,
+    [userId]
+  );
 };
